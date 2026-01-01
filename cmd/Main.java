@@ -33,8 +33,8 @@ public class Main {
 								long start = System.currentTimeMillis();
 								CharaPak[] paks = new CharaPak[pakFiles.length];
 								for (int i = 0; i < paks.length; i++) {
-									if (paks[i].isValid()) paks[i] = new CharaPak(pakFiles[i]);
-									else System.out.println("WARNING: Skipping " + paks[i].getName() + "...");
+									paks[i] = new CharaPak(pakFiles[i]);
+									if (!paks[i].isValid()) System.out.println("WARNING: Skipping " + paks[i].getName() + "...");
 								}
 								if (read) Scouter.writeSearchCsv(paks);
 								else if (write) Scouter.fixInvalidParams(paks);
