@@ -14,7 +14,7 @@ public class CharaPak {
 	private static final String[] Z_SEARCH_TYPES = {
 		"Ki Search", "Ki Search (Fast)", "Scouter Search",
 		"Scouter Search (Fast)", "Scouter Search (Very Fast)", "Ki Search (No Radar Flash)",
-		"Ki Search (Androids)", "Ki Search (Slow & No Radar Flash)",
+		"Robot Search", "Eye Search (Slow & No Radar Flash)",
 		"Ki Search (Villains)", "Ki Search (Mecha Frieza)"
 	};
 	
@@ -25,9 +25,18 @@ public class CharaPak {
 		//For context, a positive Little Endian integer is often equivalent to a negative Big Endian integer
 		if (input > 0) Main.wiiMode = true;
 		else Main.wiiMode = false;
+		//Primary validation (only checks number of packed files, which also includes null / zero-byte ones)
 		int numPakContents = LittleEndian.getInt(input);
 		if (numPakContents == 250) pakState = BT2_PAK;
 		else if (numPakContents == 252) pakState = BT3_PAK;
+		else pakState = INVALID_PAK;
+		//Secondary validation (checks for melee parameters, which only costume files outside of story mode do)
+		pak.seek(76);
+		int addrMeleeStart = LittleEndian.getInt(pak.readInt());
+		int addrMeleeEnd = LittleEndian.getInt(pak.readInt());
+		int meleeParamSize = addrMeleeEnd - addrMeleeStart;
+		if (meleeParamSize == 10624) pakState = BT2_PAK;
+		else if (meleeParamSize == 8512) pakState = BT3_PAK;
 		else pakState = INVALID_PAK;
 	}
 	
